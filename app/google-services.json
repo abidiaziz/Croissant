@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "684472505830",
+    "project_id": "croissant-3ee7a",
+    "storage_bucket": "croissant-3ee7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684472505830:android:a759a83a6afe131d933227",
+        "android_client_info": {
+          "package_name": "com.example.croissant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEyxZH2pj7opX9L84A0PVXVUEYdtd-kgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Croissant</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="go_to_register">New user? Register here</string>
+    <string name="go_to_login">Already have an account? Login</string>
+    <string name="manage_users">Manage Users</string>
+    <string name="delete">Delete</string>
+    <string name="active">Active</string>
+    <string name="account_deactivated">Your account has been deactivated. Please contact the admin.</string>
+</resources>
