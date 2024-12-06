@@ -1,21 +1,19 @@
-package com.example.croissant;
+package com.example.croissant.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.croissant.R;
+import com.example.croissant.adapters.FilmAdapter;
+import com.example.croissant.entities.Film;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,31 +23,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
 import android.widget.EditText;
 
-
-public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFilmClickListener {
+public class MainActivity extends BaseActivity implements FilmAdapter.OnFilmClickListener {
     private RecyclerView recyclerView;
     private FilmAdapter adapter;
     private List<Film> films;
     private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
     private boolean isAdmin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHeaderTitle("Film list");
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        setupToolbar();
 
         recyclerView = findViewById(R.id.recyclerView);
         films = new ArrayList<>();
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
 
         checkUserRole();
     }
@@ -58,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFil
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             Log.e("MainActivity", "No user is signed in");
-            // Redirect to login activity
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
             return;
@@ -78,40 +72,15 @@ public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFil
                             showDeactivatedMessage();
                         } else {
                             setupRecyclerView();
-                            setupNormalUserFunctionality();
                             loadFilms();
-                            if (isAdmin) {
-                                setupAdminFunctionality();
-                            }
+                            invalidateOptionsMenu();
                         }
                     } else {
                         Log.e("MainActivity", "User document does not exist");
-                        // Handle the case where the user document doesn't exist
-                        createUserDocument(currentUser);
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("MainActivity", "Error getting user document", e);
-                    // Handle the error, maybe show a message to the user
-                    Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                });
-    }
-
-    private void createUserDocument(FirebaseUser user) {
-        Map<String, Object> userMap = new HashMap<>();
-        userMap.put("email", user.getEmail());
-        userMap.put("isAdmin", false);
-        userMap.put("isActive", true);
-
-        db.collection("users").document(user.getUid())
-                .set(userMap)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("MainActivity", "User document created successfully");
-                    setupRecyclerView();
-                    loadFilms();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("MainActivity", "Error creating user document", e);
                     Toast.makeText(MainActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
@@ -140,19 +109,11 @@ public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFil
                     films.clear();
                     for (QueryDocumentSnapshot doc : value) {
                         Film film = doc.toObject(Film.class);
-                        film.setId(doc.getId());  // Set the ID from the Firestore document
+                        film.setId(doc.getId());
                         films.add(film);
                     }
                     adapter.notifyDataSetChanged();
                 });
-    }
-
-    private void setupAdminFunctionality() {
-        invalidateOptionsMenu();
-    }
-
-    private void setupNormalUserFunctionality() {
-        invalidateOptionsMenu();
     }
 
     @Override
@@ -165,11 +126,40 @@ public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFil
     @Override
     public void onDeleteFilm(Film film) {
         if (isAdmin) {
-            db.collection("films").document(film.getId())
-                    .delete()
-                    .addOnSuccessListener(aVoid -> Toast.makeText(this, "Film deleted", Toast.LENGTH_SHORT).show())
-                    .addOnFailureListener(e -> Toast.makeText(this, "Failed to delete film", Toast.LENGTH_SHORT).show());
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Delete Film")
+                    .setMessage("Are you sure you want to delete this film? It will also be removed from all users' favorites.")
+                    .setPositiveButton("Delete", (dialog, which) -> {
+                        deleteFilmAndFavorites(film);
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         }
+    }
+
+    private void deleteFilmAndFavorites(Film film) {
+        db.collection("films").document(film.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Film deleted", Toast.LENGTH_SHORT).show();
+                    deleteFilmFromAllUsersFavorites(film);
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Failed to delete film", Toast.LENGTH_SHORT).show());
+    }
+
+
+    private void deleteFilmFromAllUsersFavorites(Film film) {
+        db.collection("users")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot userDoc : queryDocumentSnapshots) {
+                        db.collection("users").document(userDoc.getId())
+                                .collection("favorites").document(film.getTitle())
+                                .delete()
+                                .addOnFailureListener(e -> Log.e("MainActivity", "Error deleting favorite for user: " + userDoc.getId(), e));
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("MainActivity", "Error fetching users to delete favorites", e));
     }
 
     private void toggleFavorite(Film film) {
@@ -193,37 +183,7 @@ public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFil
                 });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_add_film).setVisible(isAdmin);
-        menu.findItem(R.id.action_manage_users).setVisible(isAdmin);
-        menu.findItem(R.id.action_user_comparisons).setVisible(!isAdmin);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.action_add_film) {
-            showAddFilmDialog();
-            return true;
-        } else if (itemId == R.id.action_manage_users) {
-            startActivity(new Intent(this, UserManagementActivity.class));
-            return true;
-        } else if (itemId == R.id.action_user_comparisons) {
-            startActivity(new Intent(this, UserComparisonActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void showAddFilmDialog() {
+    public void showAddFilmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View view = getLayoutInflater().inflate(R.layout.dialog_add_film, null);
         EditText etTitle = view.findViewById(R.id.etTitle);
@@ -251,6 +211,11 @@ public class MainActivity extends AppCompatActivity implements FilmAdapter.OnFil
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error adding film: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    @Override
+    protected boolean isUserAdmin() {
+        return isAdmin;
     }
 }
 

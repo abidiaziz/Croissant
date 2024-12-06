@@ -1,36 +1,36 @@
-package com.example.croissant;
+package com.example.croissant.activities;
 
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.croissant.R;
+import com.example.croissant.adapters.UserComparisonAdapter;
+import com.example.croissant.entities.UserComparison;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class UserComparisonActivity extends AppCompatActivity {
+public class UserComparisonActivity extends BaseActivity {
     private RecyclerView recyclerView;
     private UserComparisonAdapter adapter;
     private List<UserComparison> userComparisons;
     private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_comparison);
 
-        recyclerView = findViewById(R.id.recyclerViewUserComparison);
+        setHeaderTitle("Users with same favorites");
+        setupToolbar();
+
+        recyclerView = findViewById(R.id.recyclerViewComparison);
         userComparisons = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
 
         adapter = new UserComparisonAdapter(userComparisons);
         recyclerView.setAdapter(adapter);
@@ -74,10 +74,18 @@ public class UserComparisonActivity extends AppCompatActivity {
 
                     double percentage = (double) commonFavorites.size() / currentUserFavoriteIds.size() * 100;
                     if (percentage >= 70) {
-                        UserComparison comparison = new UserComparison(userDoc.getString("email"), percentage);
+                        String firstName = userDoc.getString("firstName");
+                        String lastName = userDoc.getString("lastName");
+                        UserComparison comparison = new UserComparison(userDoc.getId(), firstName, lastName, percentage);
                         userComparisons.add(comparison);
                         adapter.notifyDataSetChanged();
                     }
                 });
     }
+
+    @Override
+    protected boolean isUserAdmin() {
+        return false;
+    }
 }
+

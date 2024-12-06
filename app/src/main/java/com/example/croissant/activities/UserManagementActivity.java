@@ -1,27 +1,36 @@
-package com.example.croissant;
+package com.example.croissant.activities;
 
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.croissant.R;
+import com.example.croissant.adapters.UserAdapter;
+import com.example.croissant.entities.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserManagementActivity extends AppCompatActivity implements UserAdapter.OnUserStatusChangeListener {
+public class UserManagementActivity extends BaseActivity implements UserAdapter.OnUserStatusChangeListener {
     private RecyclerView recyclerView;
     private UserAdapter adapter;
     private List<User> users;
     private FirebaseFirestore db;
+    private Button btnRegisterAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_management);
 
+        setHeaderTitle("Users management");
+        setupToolbar();
+
         recyclerView = findViewById(R.id.recyclerViewUsers);
+        btnRegisterAdmin = findViewById(R.id.btnRegisterAdmin);
         users = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
 
@@ -34,6 +43,7 @@ public class UserManagementActivity extends AppCompatActivity implements UserAda
 
     private void loadUsers() {
         db.collection("users")
+                .whereEqualTo("isAdmin", false)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Toast.makeText(this, "Error loading users", Toast.LENGTH_SHORT).show();
@@ -61,4 +71,10 @@ public class UserManagementActivity extends AppCompatActivity implements UserAda
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Failed to update user status", Toast.LENGTH_SHORT).show());
     }
+
+    @Override
+    protected boolean isUserAdmin() {
+        return true;
+    }
 }
+

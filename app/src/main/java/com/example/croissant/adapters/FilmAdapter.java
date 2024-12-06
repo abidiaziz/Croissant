@@ -1,4 +1,4 @@
-package com.example.croissant;
+package com.example.croissant.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.croissant.R;
+import com.example.croissant.entities.Film;
 
 import java.util.List;
 
@@ -64,7 +67,7 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmViewHolder
         }
     }
 
-    interface OnFilmClickListener {
+    public interface OnFilmClickListener {
         void onFilmClick(Film film);
         void onDeleteFilm(Film film);
     }

@@ -1,12 +1,14 @@
-package com.example.croissant;
+package com.example.croissant.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.croissant.R;
+import com.example.croissant.entities.UserComparison;
 
 import java.util.List;
 
@@ -27,8 +29,8 @@ public class UserComparisonAdapter extends RecyclerView.Adapter<UserComparisonAd
     @Override
     public void onBindViewHolder(@NonNull UserComparisonViewHolder holder, int position) {
         UserComparison comparison = userComparisons.get(position);
-        holder.tvEmail.setText(comparison.getEmail());
-        holder.tvPercentage.setText(String.format("%.1f%%", comparison.getPercentage()));
+        holder.tvUserName.setText(comparison.getFirstName() + " " + comparison.getLastName());
+        holder.tvMatchPercentage.setText(String.format("%.1f%%", comparison.getMatchPercentage()));
     }
 
     @Override
@@ -37,12 +39,14 @@ public class UserComparisonAdapter extends RecyclerView.Adapter<UserComparisonAd
     }
 
     static class UserComparisonViewHolder extends RecyclerView.ViewHolder {
-        TextView tvEmail, tvPercentage;
+        TextView tvUserName;
+        TextView tvMatchPercentage;
 
         UserComparisonViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvEmail = itemView.findViewById(R.id.tvUserEmail);
-            tvPercentage = itemView.findViewById(R.id.tvPercentage);
+            tvUserName = itemView.findViewById(R.id.tvUserName);
+            tvMatchPercentage = itemView.findViewById(R.id.tvMatchPercentage);
         }
     }
 }
+

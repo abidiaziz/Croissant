@@ -1,4 +1,4 @@
-package com.example.croissant;
+package com.example.croissant.entities;
 
 public class Film {
     private String id;

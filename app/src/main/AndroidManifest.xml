@@ -9,8 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".activities.FavoriteFilmsActivity" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,10 +19,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".UserManagementActivity" />
-        <activity android:name=".UserComparisonActivity" />
+        <activity android:name=".activities.RegisterActivity" />
+        <activity android:name=".activities.AdminRegistrationActivity" />
+        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.UserManagementActivity" />
+        <activity android:name=".activities.UserComparisonActivity" />
     </application>
 
 </manifest>

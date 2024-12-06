@@ -1,4 +1,4 @@
-package com.example.croissant;
+package com.example.croissant.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -6,6 +6,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.croissant.R;
+import com.example.croissant.entities.User;
+
 import java.util.List;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder> {
@@ -49,7 +53,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
         }
     }
 
-    interface OnUserStatusChangeListener {
+    public interface OnUserStatusChangeListener {
         void onUserStatusChange(User user);
     }
 }
