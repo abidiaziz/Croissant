@@ -41,7 +41,7 @@ public class MainActivity extends BaseActivity implements FilmAdapter.OnFilmClic
 
         setupToolbar();
 
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerViewFilm);
         films = new ArrayList<>();
         FirebaseApp.initializeApp(this);
         db = FirebaseFirestore.getInstance();
@@ -52,18 +52,14 @@ public class MainActivity extends BaseActivity implements FilmAdapter.OnFilmClic
     private void checkUserRole() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
-            Log.e("MainActivity", "No user is signed in");
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
             return;
         }
 
         String uid = currentUser.getUid();
-        Log.d("MainActivity", "Checking role for user: " + uid);
-
         db.collection("users").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    Log.d("MainActivity", "Successfully retrieved user document");
                     if (documentSnapshot.exists()) {
                         isAdmin = documentSnapshot.getBoolean("isAdmin");
                         boolean isActive = documentSnapshot.getBoolean("isActive");
@@ -87,8 +83,6 @@ public class MainActivity extends BaseActivity implements FilmAdapter.OnFilmClic
 
     private void showDeactivatedMessage() {
         setContentView(R.layout.activity_deactivated);
-        TextView tvMessage = findViewById(R.id.tvDeactivatedMessage);
-        tvMessage.setText("Your account has been deactivated. Please contact the admin.");
     }
 
     private void setupRecyclerView() {
@@ -102,7 +96,6 @@ public class MainActivity extends BaseActivity implements FilmAdapter.OnFilmClic
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Toast.makeText(this, "Error loading films: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                        Log.e("MainActivity", "Error loading films", error);
                         return;
                     }
 

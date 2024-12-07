@@ -19,7 +19,6 @@ public class UserManagementActivity extends BaseActivity implements UserAdapter.
     private UserAdapter adapter;
     private List<User> users;
     private FirebaseFirestore db;
-    private Button btnRegisterAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +29,6 @@ public class UserManagementActivity extends BaseActivity implements UserAdapter.
         setupToolbar();
 
         recyclerView = findViewById(R.id.recyclerViewUsers);
-        btnRegisterAdmin = findViewById(R.id.btnRegisterAdmin);
         users = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
 

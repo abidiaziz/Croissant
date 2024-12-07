@@ -7,7 +7,7 @@
     tools:context=".activities.MainActivity">
 
     <TextView
-        android:id="@+id/tvDeactivatedMessage"
+        android:id="@+id/deactivatedMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"

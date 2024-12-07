@@ -52,6 +52,7 @@ public class BaseActivity extends AppCompatActivity {
         menu.findItem(R.id.action_manage_users).setVisible(isAdmin);
         menu.findItem(R.id.action_user_comparisons).setVisible(!isAdmin);
         menu.findItem(R.id.action_favorite_films).setVisible(!isAdmin);
+        menu.findItem(R.id.action_add_admin).setVisible(isAdmin);
         return super.onPrepareOptionsMenu(menu);
     }
 

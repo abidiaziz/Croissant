@@ -35,9 +35,9 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmViewHolder
     @Override
     public void onBindViewHolder(@NonNull FilmViewHolder holder, int position) {
         Film film = films.get(position);
-        holder.tvTitle.setText(film.getTitle());
-        holder.tvDirector.setText("Director: " + film.getDirector());
-        holder.tvReleaseYear.setText("Year: " + film.getReleaseYear());
+        holder.title.setText(film.getTitle());
+        holder.director.setText("Director: " + film.getDirector());
+        holder.releaseYear.setText("Year: " + film.getReleaseYear());
 
         if (isAdmin) {
             holder.btnDelete.setVisibility(View.VISIBLE);
@@ -55,14 +55,14 @@ public class FilmAdapter extends RecyclerView.Adapter<FilmAdapter.FilmViewHolder
     }
 
     static class FilmViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvDirector, tvReleaseYear;
+        TextView title, director, releaseYear;
         Button btnDelete;
 
         FilmViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
-            tvDirector = itemView.findViewById(R.id.tvDirector);
-            tvReleaseYear = itemView.findViewById(R.id.tvReleaseYear);
+            title = itemView.findViewById(R.id.title);
+            director = itemView.findViewById(R.id.director);
+            releaseYear = itemView.findViewById(R.id.releaseYear);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
